@@ -1,0 +1,71 @@
+syntax = "proto3";
+package MessageType;
+
+enum MessageMainType {
+    MSG_UnKnow = 0;
+    TypeHeart     = 1000; //心跳
+    TypeBroadcast = 1001; //广播
+    TypeC2c       = 1002; //点对点消息
+    TypeKick      = 1003; //踢人消息
+    TypeBalance   = 1004; //玩家余额变动消息
+    TypeTexas     = 1008; //德州扑克
+    TypeShort     = 1010; //短牌
+}
+
+enum MessageSubType {
+    MSG_UnKnow = 0;
+
+	GetGameScene    = 201; //获取游戏场景
+	UserSitDown     = 202; //用户坐下
+	UserStandUp     = 203; //用户站起
+	UserTransferIn  = 204; //用户转入
+	UserTransferOut = 205; //用户转出
+
+	UserFold  = 206; //用户弃牌
+	UserBet   = 207; //用户下注
+	UserCall  = 208; //用户跟注
+	UserRaise = 209; //用户加注
+
+	UserAllIn  = 210; //用户全押
+	UserCheck  = 211; //用户过牌
+	JoinTable  = 212; //加入桌子
+	LeaveTable = 213; //离开桌子
+	RecordList 	 = 214; //游戏记录列表
+	RecordDetails = 215; //游戏记录详情
+	EmojiChat 	  = 216; // 用户发表情
+	TextChat	  = 217; //用户发文字	
+
+	NtcGetGameScene    = 401; //游戏场景
+	NtcUserSitDown     = 402; //用户坐下
+	NtcUserStandUp     = 403; //用户站起
+	NtcUserTransferIn  = 404; //用户转入
+	NtcUserTransferOut = 405; //用户转出
+
+	NtcUserFold  = 406; //用户弃牌
+	NtcUserBet   = 407; //用户下注
+	NtcUserCall  = 408; //用户跟注
+	NtcUserRaise = 409; //用户加注
+
+	NtcUserAllIn  = 410; //用户全押
+	NtcUserCheck  = 411; //用户过牌
+	NtcJoinTable  = 412; //加入桌子
+	NtcLeaveTable = 413; //离开桌子
+
+	NtcAssetsChange = 414; // 用户资产变化
+	NtcCountdown    = 415; // 游戏倒计时
+	NtcGameStart    = 416; // 游戏开始
+
+	NtcRoundStart = 417; // 游戏回合开始
+	NtcTurnStart  = 418; // 用户回合开始
+	NtcUserAction = 419; // 用户操作
+
+	NtcHoleCards     = 420; // 发牌通知
+	NtcUserHoleCards = 421; // 用户底牌
+	NtcCommunityCard = 422; // 发公共牌
+	NtcGameEnd       = 423; // 游戏结束
+	NtcPotInfo       = 424; // 奖池信息
+	NtcEmojiChat 	 = 425; // 用户发表情
+	NtcTextChat	 	 = 426; //用户发文字		
+}
+
+

@@ -1,0 +1,109 @@
+
+you_win.png
+size: 1950,1079
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+YOU-WIN
+  rotate: false
+  xy: 690, 996
+  size: 512, 81
+  orig: 514, 82
+  offset: 1, 0
+  index: -1
+chouma_back
+  rotate: false
+  xy: 1187, 176
+  size: 484, 478
+  orig: 484, 478
+  offset: 0, 0
+  index: -1
+chouma_front
+  rotate: false
+  xy: 2, 2
+  size: 484, 478
+  orig: 484, 478
+  offset: 0, 0
+  index: -1
+chouma_mid
+  rotate: true
+  xy: 208, 997
+  size: 80, 480
+  orig: 80, 480
+  offset: 0, 0
+  index: -1
+chouma_mid2
+  rotate: true
+  xy: 1470, 875
+  size: 202, 478
+  orig: 202, 478
+  offset: 0, 0
+  index: -1
+flash
+  rotate: true
+  xy: 2, 1027
+  size: 50, 204
+  orig: 55, 209
+  offset: 2, 2
+  index: -1
+image-3495
+  rotate: false
+  xy: 1204, 927
+  size: 264, 150
+  orig: 266, 152
+  offset: 1, 1
+  index: -1
+jinbi
+  rotate: false
+  xy: 2, 809
+  size: 922, 185
+  orig: 940, 186
+  offset: 1, 0
+  index: -1
+maisui
+  rotate: true
+  xy: 1188, 656
+  size: 217, 423
+  orig: 217, 423
+  offset: 0, 0
+  index: -1
+piaodai
+  rotate: false
+  xy: 2, 482
+  size: 1183, 250
+  orig: 1184, 297
+  offset: 1, 47
+  index: -1
+xingxing
+  rotate: false
+  xy: 926, 734
+  size: 260, 260
+  orig: 262, 262
+  offset: 1, 1
+  index: -1
+
+you_win2.png
+size: 1322,1322
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+blob_https___m
+  rotate: false
+  xy: 2, 2
+  size: 1318, 1318
+  orig: 1362, 1402
+  offset: 22, 42
+  index: -1
+
+you_win3.png
+size: 1357,1379
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+bg_flash
+  rotate: false
+  xy: 2, 2
+  size: 1353, 1375
+  orig: 1472, 1510
+  offset: 56, 59
+  index: -1

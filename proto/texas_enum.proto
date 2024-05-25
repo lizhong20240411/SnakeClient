@@ -1,0 +1,98 @@
+syntax = "proto3";
+option go_package = "../pb;pb";
+package game;
+
+// 返回代码
+enum ReturnCode {
+  Success = 0;     // 成功
+  InternalServerError = 10000; // 服务器内部错误
+  InvalidChairID = 20000; // 椅子标识无效
+  ErrorUserSeated = 21000; // 用户已经就坐
+  ErrorUserNotSeated = 21001; // 用户没有就坐
+  ErrorUserNotExists = 21002; // 用户不存在
+  ErrorUserEntered = 21003; // 用户已经进入房间
+  ErrorUserNotEntered = 21004; // 用户没有进入房间
+  ErrorTableNotExists = 22000; // 桌子不存在
+  ErrorTableJoined = 22001; // 用户已经加入
+  ErrorTableFullUsers = 22002; // 桌子满人
+  ErrorTableExists = 22003; // 桌子已存在
+  ErrorTableNotJoined = 22004; // 用户没有加入
+  ErrorChairOccupied = 23000; // 椅子已被占用
+  InvalidTransferAmount = 24000; // 转账金额无效
+  InvalidUserAction = 25000; // 用户操作无效
+  ErrorUserPlaying = 30000; // 用户正在游戏中
+  ErrorInsufficientBalance = 30100; // 余额不足
+  ErrorEnterAmount = 30101; // 准入金额未达到
+  ErrorActionTimeout = 30200; // 操作超时
+}
+
+// 游戏状态
+enum GameState {
+  GameInvalid = 0;  // 无效
+  GameFree = 10; // 空闲
+  GamePlaying = 20; // 游戏中
+  GameEND = 30; // 结束
+}
+
+// 用户状态
+enum UserState {
+  UserInvalid = 0;  // 无效
+  UserFree = 10; // 空闲
+  UserPlaying = 20; // 游戏中
+  UserFold = 30; // 弃牌
+}
+
+enum GameRound {
+  RoundInvalid = 0; // 无效
+  RoundPreFlop = 1; // 翻牌前
+  RoundFlop = 2; // 翻牌
+  RoundTurn = 3; // 转牌
+  RoundRiver = 4; // 河牌
+  RoundEnd = 5; // 结束
+}
+
+// 用户操作类型
+enum UserActionKind {
+  ActionInvalid = 0; // 无效
+  ActionPostSmallBlind = 10; // 下小盲住
+  ActionPostBigBlind = 11; // 下大盲注
+  ActionFold = 20; // 弃牌
+  ActionBet = 21; // 下注
+  ActionCall = 22; // 跟注
+  ActionRaise = 23; // 加注
+  ActionAllIn = 24; // 全下
+  ActionCheck = 25; // 过牌
+  ActionShowHole = 26; // 展示底牌
+}
+
+// 牌型
+enum CardRank {
+  RankInvalid = 0; // 无效
+  RankHighCard = 1; // 散牌
+  RankOnePair = 2;                  // 对子
+  RankTwoPair = 3;                  // 两对
+  RankThreeOfAKind = 4;             // 三条
+  RankStraight = 5;                // 顺子
+  RankFlush = 6;                // 同花
+  RankFullHouse = 7;              // 葫芦
+  RankFourOfAKind = 8;          // 四条
+  RankStraightFlush = 9;         // 同花顺
+  RankRoyalFlush = 10;           // 皇家同花顺
+}
+
+// 游戏用户
+message GameUser {
+  int64 UserID = 1; // 用户标识
+  string Nickname = 2; // 用户昵称
+  string Avatar = 3; // 头像
+  int32 ChairID = 4; // 椅子标识
+  double Balance = 5; // 当前余额
+  double CurrScore = 6; // 当前分数
+}
+
+message RecordListInfo{
+  int32 Index   =   1; //第几局
+  string Code   =   2; //牌局编号
+  int64  Date   =   3; //记录生成时间
+  double WinLose =  4; //我自己的输赢
+}

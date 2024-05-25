@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option go_package = "./;pb";
+
+package msg;
+
+/**
+  字段说明
+  1   MsgId                 消息id            全局唯一
+  2   Type                  消息媒体类型        1000心跳检测 1001广播公告消息  1002点对点消息 1003踢人通知消息  1004金额变动消息
+  3   MsgType               业务类型           Type=1008，则为游戏动作，参考message_type枚举
+  4   From                  消息发送者
+  5   To                    消息接收者
+  6   Ope                   暂时无用
+  7   Title                 消息标题
+  8   Body                  消息主体
+  9   Timestamp             消息时间戳，精确到毫秒
+  11  Device                发送消息的终端 1,sever,服务端  2,Android  3,Ios  4,web
+  12  Ext                   消息扩展，暂时无用
+ */
+
+message Message {
+  int64 MsgId = 1;
+  int64 Type = 2;
+  int64 MsgType = 3;
+  string From = 4;
+  string To = 5;
+  int64 Ope = 6;
+  string Title = 7;
+  bytes Body = 8;
+  int64 Timestamp = 9;
+  int64 MarkRead = 10;
+  int64 Device = 11;
+  string Ext = 12;
+}
+
+

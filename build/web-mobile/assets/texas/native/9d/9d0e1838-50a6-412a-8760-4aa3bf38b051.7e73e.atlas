@@ -1,0 +1,75 @@
+
+look_win.png
+size: 1801,1441
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Rectangle 41300
+  rotate: false
+  xy: 894, 1279
+  size: 480, 160
+  orig: 480, 160
+  offset: 0, 0
+  index: -1
+Rectangle 41303
+  rotate: false
+  xy: 426, 1311
+  size: 200, 128
+  orig: 200, 128
+  offset: 0, 0
+  index: -1
+WIN
+  rotate: false
+  xy: 208, 1359
+  size: 216, 80
+  orig: 216, 80
+  offset: 0, 0
+  index: -1
+blob_https___m
+  rotate: false
+  xy: 264, 2
+  size: 1218, 1218
+  orig: 1362, 1402
+  offset: 71, 111
+  index: -1
+flash
+  rotate: true
+  xy: 2, 1389
+  size: 50, 204
+  orig: 55, 209
+  offset: 2, 2
+  index: -1
+image-3495
+  rotate: false
+  xy: 628, 1289
+  size: 264, 150
+  orig: 266, 152
+  offset: 1, 1
+  index: -1
+maisui
+  rotate: true
+  xy: 1376, 1222
+  size: 217, 423
+  orig: 217, 423
+  offset: 0, 0
+  index: -1
+xingxing
+  rotate: false
+  xy: 2, 1097
+  size: 260, 260
+  orig: 262, 262
+  offset: 1, 1
+  index: -1
+
+look_win2.png
+size: 1456,1484
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+bg_flash
+  rotate: false
+  xy: 2, 2
+  size: 1452, 1480
+  orig: 1472, 1510
+  offset: 9, 15
+  index: -1

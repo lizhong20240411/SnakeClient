@@ -1,0 +1,22 @@
+{
+  "__version__": "1.0.5",
+  "general": {
+    "designResolution": {
+      "width": 1334,
+      "height": 750,
+      "fitHeight": false,
+      "fitWidth": false
+    }
+  },
+  "custom_joint_texture_layouts": [],
+  "layer": [
+    {
+      "name": "UI_2D_BLUR_SRC_2",
+      "value": 524288
+    },
+    {
+      "name": "UI_2D_BLUR_SRC_1",
+      "value": 262144
+    }
+  ]
+}

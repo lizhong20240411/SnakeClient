@@ -1,0 +1,495 @@
+syntax = "proto3";
+option go_package = "../pb;pb";
+package game;
+
+import "texas_enum.proto";
+
+//*******************************
+//***********请求/应答************
+//*******************************
+
+// 获取游戏场景请求
+message GetGameSceneReq {
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+}
+
+// 获取游戏场景应答
+message GetGameSceneResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+//加入桌子
+message JoinTableReq{
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+}
+
+//加入桌子应答
+message JoinTableResp{
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+//离开桌子
+message LeaveTableReq{
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+}
+
+//离开桌子应答
+message LeaveTableResp{
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户坐下请求
+message UserSitDownReq {
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  int32 ChairID = 3; // 椅子标识
+}
+
+// 用户坐下应答
+message UserSitDownResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户站起请求
+message UserStandUpReq {
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  int32 ChairID = 3; // 椅子标识
+}
+
+// 用户站起应答
+message UserStandUpResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户转入请求
+message UserTransferInReq {
+  double Amount = 1; // 转入金额
+  int32 RoomID = 2; // 房间标识
+  int32 TableID = 3; // 桌子标识
+}
+
+// 用户转入应答
+message UserTransferInResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户转出请求
+message UserTransferOutReq {
+  double Amount = 1; // 转入金额
+  int32 RoomID = 2; // 房间标识
+  int32 TableID = 3; // 桌子标识
+}
+
+// 用户转出应答
+message UserTransferOutResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户弃牌请求
+message UserFoldReq {
+  int64 StepNumber = 1; // 步骤编号
+  int32 RoomID = 2; // 房间标识
+  int32 TableID = 3; // 桌子标识
+}
+
+// 用户弃牌应答
+message UserFoldResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户下注请求
+message UserBetReq {
+  double Amount = 1; // 下注金额
+  int64 StepNumber = 2; // 步骤编号
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+}
+
+// 用户下注应答
+message UserBetResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户跟注请求
+message UserCallReq {
+  int64 StepNumber = 1; // 步骤编号
+  int32 RoomID = 2; // 房间标识
+  int32 TableID = 3; // 桌子标识
+}
+
+// 用户跟注应答
+message UserCallResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户加注请求
+message UserRaiseReq {
+  double Amount = 1; // 下注金额
+  int64 StepNumber = 2; // 步骤编号
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+}
+
+// 用户加注应答
+message UserRaiseResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户全押请求
+message UserAllInReq {
+  int64 StepNumber = 1; // 步骤编号
+  int32 RoomID = 2; // 房间标识
+  int32 TableID = 3; // 桌子标识
+}
+
+// 用户全押应答
+message UserAllInResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+// 用户过牌请求
+message UserCheckReq {
+  int64 StepNumber = 1; // 步骤编号
+  int32 RoomID = 2; // 房间标识
+  int32 TableID = 3; // 桌子标识
+}
+
+// 用户过牌应答
+message UserCheckResp {
+  ReturnCode Code = 1; // 应答代码
+  string Msg = 2; //应答消息
+}
+
+//申请游戏记录列表
+message RecordListReq{
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+}
+
+message RecordListResp{
+  ReturnCode Code = 1; // 应答代码
+  int32 RoomID = 2; // 房间标识
+  int32 TableID   = 3; // 桌子标识
+  repeated RecordListInfo  list  = 4; //记录列表
+}
+
+//申请游戏记录详情
+message RecordDetailsReq{
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  int32 Index   =   3; //第几局
+  string Code   =   4; //牌局编号
+}
+
+//
+message RecordDetailsResp{
+  ReturnCode Code = 1; // 应答代码
+  int32 index   =   2; //第几局
+  string code   =   3; //牌局编号
+  repeated UserActionNtc PreFlopActionList = 4; // 翻牌前回合动作列表
+  repeated UserActionNtc FlopActionList = 5; // 翻牌回合动作列表
+  repeated UserActionNtc TurnActionList = 6; // 转拍回合动作列表
+  repeated UserActionNtc RiverActionList = 7; // 河牌回合动作列表
+  repeated UserGameResult Results = 8; // 用户游戏结果
+}
+
+message EmojiChatReq{
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  int32 EmojiIndex = 3 ; //表情编号
+}
+
+message EmojiChatResp{
+  ReturnCode Code = 1; // 应答代码
+}
+
+message TextChatReq{
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  string Text = 3 ; //发送的聊天文字
+}
+
+message TextChatResp{
+  ReturnCode Code = 1; // 应答代码
+}
+
+
+//********************************
+//*************广播通知************
+//********************************
+
+// 用户坐下通知
+message UserSitDownNtc {
+  ReturnCode Code = 1; // 应答代码
+  GameUser RoomUser = 2;// 房间用户
+}
+
+// 用户站起通知
+message UserStandUpNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+  int32 ChairID = 5; // 椅子标识
+  double Balance = 6; // 当前余额
+}
+
+// 用户转入通知
+message UserTransferInNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+  double Amount = 5; // 转入金额
+  double CurrScore = 6; // 用户当前分数
+}
+
+// 用户转出通知
+message UserTransferOutNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+  double Amount = 5; // 转出金额
+  double CurrScore = 6; // 用户当前分数
+}
+
+// 用户弃牌通知
+message UserFoldNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+}
+
+// 用户下注通知
+message UserBetNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+}
+
+// 用户跟注通知
+message UserCallNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+}
+
+// 用户加注通知
+message UserRaiseNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+}
+
+// 用户全押通知
+message UserAllInNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+}
+
+// 用户过牌通知
+message UserCheckNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+}
+
+//加入桌子通知
+message JoinTableNtc{
+  ReturnCode Code = 1; // 应答代码
+  GameUser RoomUser = 2;// 房间用户
+}
+
+//离开桌子通知
+message LeaveTableNtc{
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+  double Balance = 5; // 用户账号余额
+}
+
+// 用户资产变化通知
+message UserAssetsChangeNtc {
+  int64 UserID = 1; // 用户标识
+  int32 RoomID = 2; // 房间标识
+  int32 TableID = 3; // 桌子标识
+  int32 ChairID = 4; // 椅子标识
+  double CurrScore = 5; // 用户当前分数
+}
+
+// 游戏倒计时通知
+message GameCountdownNtc {
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  int64 Countdown = 3; // 倒计时秒数
+}
+
+// 游戏开始通知
+message GameStartNtc {
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  int32 ButtonChairID = 3; // 按钮位标识
+  int32 SmallBlindChairID = 4; // 小盲位标识
+  int32 BigBlindChairID = 5; // 大盲位标识
+  double SmallBlindAmount = 6; // 小盲注金额
+  double BigBlindAmount = 7; // 大盲注金额
+  repeated int64 UserIds = 8; //参与玩家
+  GameState GameState = 9; // 游戏状态
+}
+
+// 游戏回合开始通知
+message GameRoundStartNtc {
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  GameRound GameRound = 3; // 游戏回合
+}
+
+// 用户回合开始通知
+message UserTurnStartNtc {
+  int64 UserID = 1; // 用户标识
+  double UserScore = 2; // 用户分数
+  int32 RoomID = 3; // 房间标识
+  int32 TableID = 4; // 桌子标识
+  int32 ChairID = 5; // 椅子标识
+  double BetMinAmount = 6; // 下注最小金额
+  double CallAmount = 7; // 跟注金额
+  double RaiseMinAmount = 8; // 加注最小金额
+  repeated UserActionKind currValidActions = 9; // 用户操作
+  int64 StepNumber = 10; // 步骤编号
+  int64 Countdown = 11; // 倒计时
+}
+
+// 用户操作通知
+message UserActionNtc {
+  int64 UserID = 1; // 用户标识
+  int32 RoomID = 2; // 房间标识
+  int32 TableID = 3; // 桌子标识
+  int32 ChairID = 4; // 椅子标识
+  UserActionKind UserAction = 5; // 用户操作
+  double Amount = 6; // 下注金额
+  double CurrScore = 7; // 用户当前分数
+  double RoundBetAmount = 8; // 用户回合投注金额
+  bytes HoldCards = 9; // 用户底牌
+}
+
+// 发牌通知(所有人)
+message DealHoleCardsNtc {
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+}
+
+// 用户底牌
+message UserDealHoleCardsNtc {
+  int64 UserID = 1;   // 玩家标识
+  int32 RoomID = 2;   // 房间标识
+  int32 TableID = 3;  // 桌子标识
+  bytes HoldCards = 4; // 用户底牌
+}
+
+// 发公共牌通知
+message DealCommunityCardsNtc {
+  int32 RoomID = 1; // 房间标识
+  int32 TableID = 2; // 桌子标识
+  bytes CommunityCards = 3; // 公共牌
+}
+
+// 获取游戏场景
+message GetGameSceneNtc {
+  ReturnCode Code = 1; // 应答代码
+  int64 UserID = 2; // 用户标识
+  int32 RoomID = 3;  // 房间编号
+  int32 TableID = 4; // 桌子编号
+  GameState GameState = 5; // 游戏状态
+  double CurrScore = 6; // 用户当前分数
+  double MinTransferIn = 7; // 最小转入分数
+  double MaxTransferIn = 8; // 最大转入分数
+  repeated GameUser TableUsers = 9; // 桌子用户
+  repeated int32 FreeCharis = 10; // 空闲座位
+  repeated GameUser AudienceUsers = 11; // 旁观用户
+  GameRound GameRound = 12; // 游戏回合
+  repeated int64 UserIDs = 13; // 游戏用户
+  bytes HoldCards = 14; // 用户底牌
+  bytes CommunityCards = 15; // 公共牌
+  UserTurnStartNtc UserTurn = 16; // 用户回合
+  repeated UserActionNtc PreFlopActionList = 17; // 翻牌前回合动作列表
+  repeated UserActionNtc FlopActionList = 18; // 翻牌回合动作列表
+  repeated UserActionNtc TurnActionList = 19; // 转拍回合动作列表
+  repeated UserActionNtc RiverActionList = 20; // 河牌回合动作列表
+  int32 ButtonChairID = 21; // 按钮位置椅子标识
+  double SmallBlindAmount = 22; // 大盲注金额
+  double BigBlindAmount = 23; // 小盲注金额
+  repeated PotInfo PotInfos = 24; // 奖池金额
+  int32 GameID = 25; // 游戏标识
+  string RoomName = 26; // 房间名称
+  double EnterAmount = 27; // 准入金额
+  double TransferFees = 28; // 转入费用
+}
+
+// 奖池信息
+message PotInfo {
+  int32 PotID = 1; // 奖池编号
+  double Amount = 2; // 奖池金额
+}
+
+// 奖池信息通知
+message PotInfoNtc {
+  int32 RoomID = 1;  // 房间编号
+  int32 TableID = 2; // 桌子编号
+  repeated PotInfo PotInfos = 3; // 奖池信息
+}
+
+// 用户游戏结果
+message UserGameResult {
+  int64 UserID = 1; // 用户标识
+  double CurrScore = 2; // 当前分数
+  double ScoreChangeAmount = 3; // 分数变化数量
+}
+
+// 游戏结束通知
+message GameEndNtc {
+  int32 RoomID = 1;  // 房间编号
+  int32 TableID = 2; // 桌子编号
+  repeated UserGameResult Results = 3; // 用户游戏结果
+  GameState GameState = 4; // 游戏状态
+}
+
+message EmojiChatNtc{
+  int32 RoomID = 1;  // 房间编号
+  int32 TableID = 2; // 桌子编号
+  int64 UserID =  3; //谁发的
+  int32 EmojiIndex = 4 ; //表情编号
+
+}
+
+message TextChatNtc{
+  int32 RoomID = 1;  // 房间编号
+  int32 TableID = 2; // 桌子编号
+  int64 UserID =  3; //谁发的
+  string Text = 4 ; //发送的聊天文字
+  
+}

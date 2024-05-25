@@ -1,0 +1,10 @@
+{
+    "optionCreate": true,
+    "optionLimit": true,
+    "optionVerify": true,
+    "watchUpdate": false,
+    "filter": "\\.proto$",
+    "fileName": "texas",
+    "input": "/Users/liulu/Desktop/work/dubai/dzpk/proto",
+    "output": "/Users/liulu/Desktop/work/dubai/dzpk/assets/proto"
+}
