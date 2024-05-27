@@ -150,7 +150,10 @@
     "__prefab": {
       "__id__": 6
     },
-    "_customMaterial": null,
+    "_customMaterial": {
+      "__uuid__": "0b78ba67-919e-40b8-a70f-9d5fb96a8e55",
+      "__expectedType__": "cc.Material"
+    },
     "_srcBlendFactor": 2,
     "_dstBlendFactor": 4,
     "_color": {
@@ -210,8 +213,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
-      "height": 100
+      "width": 126,
+      "height": 126
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",

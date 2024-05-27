@@ -1,0 +1,140 @@
+// Copyright (c) 2017-2020 Xiamen Yaji Software Co., Ltd.
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: sprite-vs:vert
+      frag: sprite-fs:frag
+      depthStencilState:
+        depthTest: false
+        depthWrite: false
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendDstAlpha: one_minus_src_alpha
+      rasterizerState:
+        cullMode: none
+      properties:
+        inputColor: { editor: { type: color } }
+}%
+
+CCProgram sprite-vs %{
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #if USE_LOCAL
+    #include <builtin/uniforms/cc-local>
+  #endif
+  #if SAMPLE_FROM_RT
+    #include <common/common-define>
+  #endif
+  in vec3 a_position;
+  in vec2 a_texCoord;
+  in vec4 a_color;
+
+  out vec4 color;
+  out vec2 uv0;
+
+  vec4 vert () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if USE_LOCAL
+      pos = cc_matWorld * pos;
+    #endif
+
+    #if USE_PIXEL_ALIGNMENT
+      pos = cc_matView * pos;
+      pos.xyz = floor(pos.xyz);
+      pos = cc_matProj * pos;
+    #else
+      pos = cc_matViewProj * pos;
+    #endif
+
+    uv0 = a_texCoord;
+    #if SAMPLE_FROM_RT
+      CC_HANDLE_RT_SAMPLE_FLIP(uv0);
+    #endif
+    color = a_color;
+
+    return pos;
+  }
+}%
+
+CCProgram sprite-fs %{
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #if USE_LOCAL
+    #include <builtin/uniforms/cc-local>
+  #endif
+  #include <builtin/internal/embedded-alpha>
+  #include <builtin/internal/alpha-test>
+
+  in vec4 color;
+
+  #if USE_TEXTURE
+    in vec2 uv0;
+    #pragma builtin(local)
+    layout(set = 2, binding = 12) uniform sampler2D cc_spriteTexture;
+  #endif
+
+  uniform DistortionExtent{
+    vec4 inputColor;
+  };
+
+  vec4 frag () {
+    vec4 o = inputColor;
+    vec2 p = uv0 - 0.5; // 将坐标原点移动到纹理中心
+    
+
+    // 正弦振荡
+    // float extentX = extent *sin(cc_time.x);
+    // // 计算偏移角度，与距离成正比
+    // float offsetAngle = distanceToCenter*extentX;
+
+    // // 计算偏移后的坐标
+    // vec2 offsetCoord = vec2(
+    //   p.x*cos(offsetAngle)-p.y*sin(offsetAngle),
+    //   p.x*sin(offsetAngle)+p.y*cos(offsetAngle)
+    // );
+
+    // // 归一化坐标
+    // vec2 normalizedCoord = offsetCoord +0.5;
+
+    // // vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
+
+
+    #if USE_TEXTURE
+        o *= CCSampleWithAlphaSeparated(cc_spriteTexture, uv0);
+    #endif
+
+    float distanceToCenter = length(p);
+    float radius = 0.46;
+    // 画线的宽度
+    float width = 0.48 - radius;
+
+    if(distanceToCenter > radius){
+      float d_1 = distanceToCenter - radius;
+      float d_2 = 1.0 - (d_1/width);
+      float xx =smoothstep(radius-0.01*radius, radius+0.01*radius, distanceToCenter);
+      o.r *= d_2;
+      o.g *= d_2;
+      o.b *= d_2;
+      // o.a -= xx;
+      if(uv0.y >=0.65 && uv0.y <=0.7){
+        o.a = 1.0-((uv0.y-0.65)*10.0);
+      }
+
+      if(uv0.y >0.7){
+        o.a = 0.0;
+      }
+    }
+
+    // vec4 cloor_rand = vec4(sin(cc_time.x), sin(cc_time.y), sin(cc_time.x), 1.0);
+
+    o *= color;
+    // o *= inputColor;
+
+    ALPHA_TEST(o);
+    return o;
+  }
+}%
