@@ -18,5 +18,17 @@
       "name": "UI_2D_BLUR_SRC_1",
       "value": 262144
     }
-  ]
+  ],
+  "physics": {
+    "collisionGroups": [
+      {
+        "index": 1,
+        "name": "SnakeBody"
+      }
+    ],
+    "collisionMatrix": {
+      "0": 1,
+      "1": 2
+    }
+  }
 }

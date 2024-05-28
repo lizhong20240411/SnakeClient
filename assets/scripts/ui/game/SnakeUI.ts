@@ -1,6 +1,8 @@
-import { _decorator, Component, Label, Node } from 'cc';
+import { _decorator, CircleCollider2D, Component, Label, Node } from 'cc';
 import { BaseUI } from '../../base/BaseUI';
+import { SnakeExtra } from './SnakeExtra';
 const { ccclass, property } = _decorator;
+
 
 @ccclass('SnakeUI')
 export class SnakeUI extends BaseUI {
@@ -9,10 +11,12 @@ export class SnakeUI extends BaseUI {
 
     mTitle : Label;
 
+
     InitParam() //初始化变量绑定
     {
         this.mTitle = this.GetComponentInPath("Title" , Label);
     }
+
     BindUI()  //对初始化好的变量进行自定义操作
     {
 
@@ -34,11 +38,15 @@ export class SnakeUI extends BaseUI {
     }
 
     start() {
-
+        console.log('--- SnakeExtra ---', SnakeExtra.Instance)
     }
 
     update(deltaTime: number) {
         // this.mTitle.string = `${deltaTime}`
+    }
+
+    lateUpdate(){
+
     }
 }
 
