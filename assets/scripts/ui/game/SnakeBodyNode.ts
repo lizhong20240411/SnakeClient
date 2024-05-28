@@ -50,12 +50,12 @@ export class SnakeBodyNode extends Component {
     onBeginContact (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
         // 只在两个碰撞体开始接触时被调用一次
         console.log('onBeginContact', selfCollider.tag, otherCollider.tag, contact);
-        SnakeExtra.Instance.AddToMap(selfCollider, otherCollider)
+        SnakeExtra.Instance.AddToMap(selfCollider, otherCollider, selfCollider.node, otherCollider.node)
     }
     onEndContact (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
         // 只在两个碰撞体结束接触时被调用一次
         console.log('onEndContact', selfCollider.tag, otherCollider.tag, contact);
-        SnakeExtra.Instance.RemoveFromMap(selfCollider, otherCollider)
+        SnakeExtra.Instance.RemoveFromMap(selfCollider, otherCollider, selfCollider.node, otherCollider.node)
     }
     onPreSolve (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
         // 每次将要处理碰撞体接触逻辑时被调用

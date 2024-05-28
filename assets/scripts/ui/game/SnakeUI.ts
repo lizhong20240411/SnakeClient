@@ -46,7 +46,7 @@ export class SnakeUI extends BaseUI {
     }
 
     lateUpdate(){
-
+        // 计算两个圆相交的点,并将焦点坐标转换成 以圆心为圆点的相对坐标
     }
 }
 
