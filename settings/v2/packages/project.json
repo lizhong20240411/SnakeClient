@@ -17,6 +17,10 @@
     {
       "name": "UI_2D_BLUR_SRC_1",
       "value": 262144
+    },
+    {
+      "name": "SnakeBody",
+      "value": 4096
     }
   ],
   "physics": {

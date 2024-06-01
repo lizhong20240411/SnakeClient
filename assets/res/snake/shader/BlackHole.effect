@@ -16,7 +16,8 @@ CCEffect %{
       rasterizerState:
         cullMode: none
       properties:
-        inputColor: { editor: { type: color } }
+        alphaThreshold: { value: 0.5 }
+        extent: { value: 0.5, editor: { range:[0, 20, 1], slide: true, tooltip: '扭曲效果' } } 
 }%
 
 CCProgram sprite-vs %{
@@ -78,64 +79,36 @@ CCProgram sprite-fs %{
   #endif
 
   uniform DistortionExtent{
-    vec4 inputColor;
+    float extent;
   };
 
   vec4 frag () {
-    vec4 o = inputColor;
+    vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
     vec2 p = uv0 - 0.5; // 将坐标原点移动到纹理中心
-    
+    float distanceToCenter = length(p);
 
     // 正弦振荡
-    // float extentX = extent *sin(cc_time.x);
-    // // 计算偏移角度，与距离成正比
-    // float offsetAngle = distanceToCenter*extentX;
+    float extentX = extent *sin(cc_time.x);
+    // 计算偏移角度，与距离成正比
+    float offsetAngle = distanceToCenter*extentX;
 
-    // // 计算偏移后的坐标
-    // vec2 offsetCoord = vec2(
-    //   p.x*cos(offsetAngle)-p.y*sin(offsetAngle),
-    //   p.x*sin(offsetAngle)+p.y*cos(offsetAngle)
-    // );
+    // 计算偏移后的坐标
+    vec2 offsetCoord = vec2(
+      p.x*cos(offsetAngle)-p.y*sin(offsetAngle),
+      p.x*sin(offsetAngle)+p.y*cos(offsetAngle)
+    );
 
-    // // 归一化坐标
-    // vec2 normalizedCoord = offsetCoord +0.5;
+    // 归一化坐标
+    vec2 normalizedCoord = offsetCoord +0.5;
 
-    // // vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
+    // vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
 
 
     #if USE_TEXTURE
-        o *= CCSampleWithAlphaSeparated(cc_spriteTexture, uv0);
+        o *= CCSampleWithAlphaSeparated(cc_spriteTexture, normalizedCoord);
     #endif
 
-    float distanceToCenter = length(p);
-    float radius = 0.475;
-    // 画线的宽度
-    float width = 0.5 - radius;
-
-    if(distanceToCenter > radius){
-      float d_1 = distanceToCenter - radius;
-      float d_2 = 1.0 - (d_1/width);
-      // float xx =smoothstep(radius-0.01*radius, radius+0.01*radius, distanceToCenter);
-      // o.r *= d_2;
-      // o.g *= d_2;
-      // o.b *= d_2;
-      o.a *= d_2;
-
-
-      // o.a -= xx;
-      // if(uv0.y >=0.65 && uv0.y <=0.7){
-      //   o.a = 1.0-((uv0.y-0.65)*10.0);
-      // }
-
-      // if(uv0.y >0.7){
-      //   o.a = 0.0;
-      // }
-    }
-
-    // vec4 cloor_rand = vec4(sin(cc_time.x), sin(cc_time.y), sin(cc_time.x), 1.0);
-
-    // o *= color;
-    // o *= inputColor;
+    o *= color;
 
     ALPHA_TEST(o);
     return o;

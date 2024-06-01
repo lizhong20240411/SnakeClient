@@ -82,8 +82,8 @@ CCProgram sprite-fs %{
   };
 
   vec4 frag () {
-    vec4 o = inputColor;
-    vec2 p = uv0 - 0.5; // 将坐标原点移动到纹理中心
+    // vec4 o = inputColor;
+    // vec2 p = uv0 - 0.5; // 将坐标原点移动到纹理中心
     
 
     // 正弦振荡
@@ -100,28 +100,40 @@ CCProgram sprite-fs %{
     // // 归一化坐标
     // vec2 normalizedCoord = offsetCoord +0.5;
 
-    // // vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
+    vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
 
 
     #if USE_TEXTURE
         o *= CCSampleWithAlphaSeparated(cc_spriteTexture, uv0);
+        if(o.a<1.0 && o.a>0.5 ){
+          o.r *= o.a;
+          o.g *= o.a;
+          o.b *= o.a;
+          o.a = (0.5*(1.0+o.a)); 
+        }
+        
+        if(o.a<0.5 && o.a>0.0 ){
+          o.r = 0.0;
+          o.g = 0.0;
+          o.b = 0.0;
+          o.a = 1.0; 
+        }
     #endif
 
-    float distanceToCenter = length(p);
-    float radius = 0.475;
-    // 画线的宽度
-    float width = 0.5 - radius;
+    // float distanceToCenter = length(p);
+    // float radius = 0.46;
+    // // 画线的宽度
+    // float width = 0.48 - radius;
 
-    if(distanceToCenter > radius){
-      float d_1 = distanceToCenter - radius;
-      float d_2 = 1.0 - (d_1/width);
+    // if(distanceToCenter > radius){
+      // float d_1 = distanceToCenter - radius;
+      // float d_2 = 1.0 - (d_1/width);
       // float xx =smoothstep(radius-0.01*radius, radius+0.01*radius, distanceToCenter);
       // o.r *= d_2;
       // o.g *= d_2;
       // o.b *= d_2;
-      o.a *= d_2;
 
-
+      
       // o.a -= xx;
       // if(uv0.y >=0.65 && uv0.y <=0.7){
       //   o.a = 1.0-((uv0.y-0.65)*10.0);
@@ -130,7 +142,7 @@ CCProgram sprite-fs %{
       // if(uv0.y >0.7){
       //   o.a = 0.0;
       // }
-    }
+    // }
 
     // vec4 cloor_rand = vec4(sin(cc_time.x), sin(cc_time.y), sin(cc_time.x), 1.0);
 
