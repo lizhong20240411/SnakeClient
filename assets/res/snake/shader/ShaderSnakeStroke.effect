@@ -80,8 +80,43 @@ CCProgram sprite-fs %{
   uniform DistortionExtent{
     vec4 inputColor;
   };
+  
+  /**
+    mediump vec4 cc_screenSize; // xy: screen size, zw: inverse screen size, xy：屏幕尺寸，zw：反屏幕尺寸
+    mediump vec4 cc_nativeSize; // xy: shading size, zw: inverse shading size, xy：阴影大小，zw：反向阴影大小
+    mediump vec4 cc_probeInfo; // x: reflection probe count, x: 反射探测器数量
+    mediump vec4 cc_debug_view_mode; // x: single mode, yzw: composite and misc flags combination value, x：单一模式，yzw：复合和其他标志组合值
+  */
+
+  // 描边宽度
+  float _OutlineSize = 5.0;
+  float extend(vec2 baseUv, vec2 extendUv, float maxAlpha){
+    vec2 uv = baseUv + extendUv * cc_nativeSize.zw * _OutlineSize;
+    vec4 col = texture(cc_spriteTexture, uv);
+    return max(col.a, maxAlpha);
+  }
 
   vec4 frag () {
+
+    float maxAlpha = extend(uv0, vec2(1,0), 0.0);
+    maxAlpha = extend(uv0, vec2(0,1),   maxAlpha);
+    maxAlpha = extend(uv0, vec2(-1,0),  maxAlpha);
+    maxAlpha = extend(uv0, vec2(0,-1),  maxAlpha);
+    maxAlpha = extend(uv0, vec2(1,1),   maxAlpha);
+    maxAlpha = extend(uv0, vec2(-1,1),  maxAlpha);
+    maxAlpha = extend(uv0, vec2(-1,-1), maxAlpha);
+    maxAlpha = extend(uv0, vec2(1,-1),  maxAlpha);
+
+    vec4 col = texture(cc_spriteTexture, uv0);
+    float aBase = step(0.01, col.a);
+    float aExtend = step(0.01, maxAlpha);
+    aExtend = max(0.0, aExtend-aBase);
+
+    // col *= inputColor;
+    // col.a = aExtend;
+
+    col = vec4(0.5,0.0,1.0, aExtend);
+
     // vec4 o = inputColor;
     // vec2 p = uv0 - 0.5; // 将坐标原点移动到纹理中心
     
@@ -100,25 +135,25 @@ CCProgram sprite-fs %{
     // // 归一化坐标
     // vec2 normalizedCoord = offsetCoord +0.5;
 
-    vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
+    // vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
 
 
-    #if USE_TEXTURE
-        o *= CCSampleWithAlphaSeparated(cc_spriteTexture, uv0);
-        if(o.a<1.0 && o.a>0.5 ){
-          o.r *= o.a;
-          o.g *= o.a;
-          o.b *= o.a;
-          o.a = (0.5*(1.0+o.a)); 
-        }
+    // #if USE_TEXTURE
+    //     o *= CCSampleWithAlphaSeparated(cc_spriteTexture, uv0);
+    //     if(o.a<1.0 && o.a>0.5 ){
+    //       o.r *= o.a;
+    //       o.g *= o.a;
+    //       o.b *= o.a;
+    //       o.a = (0.5*(1.0+o.a)); 
+    //     }
         
-        if(o.a<0.5 && o.a>0.0 ){
-          o.r = 0.0;
-          o.g = 0.0;
-          o.b = 0.0;
-          o.a = 1.0; 
-        }
-    #endif
+    //     if(o.a<0.5 && o.a>0.0 ){
+    //       o.r = 0.0;
+    //       o.g = 0.0;
+    //       o.b = 0.0;
+    //       o.a = 1.0; 
+    //     }
+    // #endif
 
     // float distanceToCenter = length(p);
     // float radius = 0.46;
@@ -149,7 +184,7 @@ CCProgram sprite-fs %{
     // o *= color;
     // o *= inputColor;
 
-    ALPHA_TEST(o);
-    return o;
+    ALPHA_TEST(col);
+    return col;
   }
 }%

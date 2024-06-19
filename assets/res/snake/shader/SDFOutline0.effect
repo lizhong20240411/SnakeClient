@@ -1,4 +1,7 @@
 // Copyright (c) 2017-2020 Xiamen Yaji Software Co., Ltd.
+
+// https://www.bilibili.com/video/BV1Qz4y1p7CE/
+
 CCEffect %{
   techniques:
   - passes:
@@ -17,6 +20,7 @@ CCEffect %{
         cullMode: none
       properties:
         inputColor: { editor: { type: color } }
+        degree: { value: 0.01, editor: { range:[0, 1, 0.001], slide: true, tooltip: '变化程度' } } # 此处定义的参数都必须指向 CCProgram 处对应声明的 uniform
 }%
 
 CCProgram sprite-vs %{
@@ -61,6 +65,7 @@ CCProgram sprite-vs %{
 }%
 
 CCProgram sprite-fs %{
+  #pragma extension([GL_OES_standard_derivatives, __VERSION__ < 300])
   precision highp float;
   #include <builtin/uniforms/cc-global>
   #if USE_LOCAL
@@ -68,7 +73,9 @@ CCProgram sprite-fs %{
   #endif
   #include <builtin/internal/embedded-alpha>
   #include <builtin/internal/alpha-test>
+  #include <common/common-define>
 
+  #include <sdf/sdf_func>
   in vec4 color;
 
   #if USE_TEXTURE
@@ -79,65 +86,35 @@ CCProgram sprite-fs %{
 
   uniform DistortionExtent{
     vec4 inputColor;
+    float degree;
   };
 
-  vec4 frag () {
-    vec4 o = inputColor;
-    vec2 p = uv0 - 0.5; // 将坐标原点移动到纹理中心
-    
-
-    // 正弦振荡
-    // float extentX = extent *sin(cc_time.x);
-    // // 计算偏移角度，与距离成正比
-    // float offsetAngle = distanceToCenter*extentX;
-
-    // // 计算偏移后的坐标
-    // vec2 offsetCoord = vec2(
-    //   p.x*cos(offsetAngle)-p.y*sin(offsetAngle),
-    //   p.x*sin(offsetAngle)+p.y*cos(offsetAngle)
-    // );
-
-    // // 归一化坐标
-    // vec2 normalizedCoord = offsetCoord +0.5;
-
-    // // vec4 o = vec4(1.0, 1.0, 1.0, 1.0);
-
-
-    #if USE_TEXTURE
-        o *= CCSampleWithAlphaSeparated(cc_spriteTexture, uv0);
+  vec4 frag( )
+  {
+    vec2 uv = uv0.xy;
+    float D = GetD(cc_spriteTexture, uv);
+    // float w = mod(floor(cc_time.x), 8.) + 0.5;     // 边线粗度(单边)
+    float w = 4.0;     // 边线粗度(单边)
+    //fwidth 函数的作用是计算输入数据在屏幕空间中的变化率。它对每个像素（片元）计算输入数据在屏幕 x 和 y 方向上的变化量，并返回这两个变化量的绝对值之和。
+    #if __VERSION__ < 300
+      #ifdef GL_OES_standard_derivatives
+        float aastep = fwidth(D);
+      #else
+        float aastep = 0.05;
+      #endif
+    #else
+      float aastep = fwidth(D);
     #endif
+    
+    // aastep = 0.01;
 
-    float distanceToCenter = length(p);
-    float radius = 0.5;
-    // 画线的宽度
-    float width = 0.5 - radius;
+    aastep = 0.7 * length(vec2(dFdx(D), dFdy(D)));   // 更加精确的AA，但是肉眼上和fwidth(D)已经很难区分出来
+    // 1e-8 == 0.00000001
+    aastep = max(aastep, 1e-8);   // never be 0, otherwise smoothstep result unexpectly
 
-    if(distanceToCenter > radius){
-      // float d_1 = distanceToCenter - radius;
-      // float d_2 = 1.0 - (d_1/width);
-      // // float xx =smoothstep(radius-0.01*radius, radius+0.01*radius, distanceToCenter);
-      // o.r = 1.0;
-      // o.g = 1.0;
-      // o.b = 1.0;
-      // o.a = 1.0;
-
-
-      // o.a -= xx;
-      // if(uv0.y >=0.65 && uv0.y <=0.7){
-      //   o.a = 1.0-((uv0.y-0.65)*10.0);
-      // }
-
-      // if(uv0.y >0.7){
-      //   o.a = 0.0;
-      // }
-    }
-
-    // vec4 cloor_rand = vec4(sin(cc_time.x), sin(cc_time.y), sin(cc_time.x), 1.0);
-
-    // o *= color;
-    // o *= inputColor;
-
-    ALPHA_TEST(o);
-    return o;
+    float mask = smoothstep(aastep, -aastep, abs(D)-w);
+    vec4 fragColor = vec4(0.1, 0.5, 0.9, mask);
+    return fragColor;
   }
+	
 }%

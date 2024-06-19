@@ -5,12 +5,13 @@
   "__editorExtras__": {},
   "_native": "",
   "_effectAsset": {
-    "__uuid__": "3005a222-ba58-4a2f-942d-7ab622e798fb",
+    "__uuid__": "788f24b9-996f-44aa-a219-7b470cd66317",
     "__expectedType__": "cc.EffectAsset"
   },
   "_techIdx": 0,
   "_defines": [
     {
+      "SDF_HI_RES": true,
       "USE_TEXTURE": true
     }
   ],
@@ -29,11 +30,24 @@
     {
       "inputColor": {
         "__type__": "cc.Color",
-        "r": 228,
-        "g": 29,
-        "b": 29,
+        "r": 32,
+        "g": 32,
+        "b": 32,
         "a": 255
-      }
+      },
+      "LoctexSize": {
+        "__type__": "cc.Vec4",
+        "x": 256,
+        "y": 256,
+        "z": 0.003906,
+        "w": 0.003906
+      },
+      "LoctmaxDist": {
+        "__type__": "cc.Vec2",
+        "x": 8,
+        "y": 0.125
+      },
+      "_Value": 0.385
     }
   ]
 }

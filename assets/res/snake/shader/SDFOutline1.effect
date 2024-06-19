@@ -1,0 +1,156 @@
+// Copyright (c) 2017-2020 Xiamen Yaji Software Co., Ltd.
+
+// https://www.bilibili.com/video/BV1Qz4y1p7CE/
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: sprite-vs:vert
+      frag: sprite-fs:frag
+      depthStencilState:
+        depthTest: false
+        depthWrite: false
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendDstAlpha: one_minus_src_alpha
+      rasterizerState:
+        cullMode: none
+      properties:
+        originTexture: { value: white }
+        degree: { value: 0.01, editor: { range:[0, 1, 0.001], slide: true, tooltip: '变化程度' } } # 此处定义的参数都必须指向 CCProgram 处对应声明的 uniform
+}%
+
+CCProgram sprite-vs %{
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #if USE_LOCAL
+    #include <builtin/uniforms/cc-local>
+  #endif
+  #if SAMPLE_FROM_RT
+    #include <common/common-define>
+  #endif
+  in vec3 a_position;
+  in vec2 a_texCoord;
+  in vec4 a_color;
+
+  out vec4 color;
+  out vec2 uv0;
+
+  vec4 vert () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if USE_LOCAL
+      pos = cc_matWorld * pos;
+    #endif
+
+    #if USE_PIXEL_ALIGNMENT
+      pos = cc_matView * pos;
+      pos.xyz = floor(pos.xyz);
+      pos = cc_matProj * pos;
+    #else
+      pos = cc_matViewProj * pos;
+    #endif
+
+    uv0 = a_texCoord;
+    #if SAMPLE_FROM_RT
+      CC_HANDLE_RT_SAMPLE_FLIP(uv0);
+    #endif
+    color = a_color;
+
+    return pos;
+  }
+}%
+
+CCProgram sprite-fs %{
+  // #pragma extension([GL_OES_standard_derivatives, __VERSION__ < 300])
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #if USE_LOCAL
+    #include <builtin/uniforms/cc-local>
+  #endif
+  #include <builtin/internal/embedded-alpha>
+  #include <builtin/internal/alpha-test>
+  #include <common/common-define>
+
+  #include <sdf/sdf_func>
+  in vec4 color;
+
+  uniform DistortionExtent{
+    float degree;
+  };
+  
+  #if USE_TEXTURE
+    in vec2 uv0;
+    #pragma builtin(local)
+    layout(set = 2, binding = 12) uniform sampler2D cc_spriteTexture;
+    uniform sampler2D originTexture;
+  #endif
+
+
+  // #define PI 3.141592653589793
+  
+  float Remap01(float a, float b, float t) {
+    return (t-a) / (b-a);
+  }
+ 
+  float Remap(float a, float b, float c, float d, float t) {
+    return Remap01(a, b, t) * (d-c) + c;
+  }
+ 
+  // 脉冲函数
+  // X,Y区间都是[0,1]，X=0.5位置Y=1
+  // https://www.iquilezles.org/www/articles/functions/functions.htm
+  float Pulse(float x) {
+    return pow(4.0 * x * (1.0 - x), 16.0);
+  }
+ 
+  vec4 frag()
+  {
+    vec2 uv = uv0.xy;
+    // vec4 col = texture(cc_spriteTexture, uv) * v_color;
+    float D = GetD(cc_spriteTexture, uv);
+    D = D * maxDist.y * 0.5 + 0.5;
+ 
+    float alpha = D;
+    // float alpha = GetAlpha(cc_spriteTexture, uv);
+    
+    // 轮廓宽度(0.0, 1.0), 对应alpha区域
+    // float outlineWidth = 0.45;
+    float offset = Remap(-1., 1., 0., 0.2, sin(cc_time.x * 2.0 * PI + uv.y * 3.0));
+    float outlineWidth = 0.3 + offset * (uv.y);
+ 
+    // 选择一个alpha值做为轮廓的中线
+    float centerAlpha = 0.5;
+ 
+    float alphaDist = abs(alpha - centerAlpha);
+    float mask = smoothstep(outlineWidth, 0., alphaDist);
+ 
+    // 外发光颜色
+    vec4 outlineColor = vec4(1., 0.5, 0., mask);
+    
+    // 底色基础上叠加一个亮度，叠加后中心位置变白
+    float brightness = 0.3;
+    outlineColor.rgb += clamp(Pulse((alphaDist + 0.5)) * brightness, 0., 1.);
+ 
+    // 原图的轮廓alpha平滑处理。originTexture的尺寸和SDF Texture不匹配，这里需要进行缩放
+    // Texture2D和RenderTexture Y倒置
+    vec2 uv2 = vec2(uv.x, 1.0-uv.y);
+ 
+    // 对uv2进行缩放，模拟Distance Texture扩边
+    vec2 ratio = texSize.xy / (texSize.xy - vec2(maxDist.x * 2.));
+    uv2 = uv2 - 0.5;
+    uv2 *= ratio;
+    uv2 = uv2 + 0.5;
+    vec4 col = texture(originTexture, uv2);
+ 
+    // 外发光和原图混合，侵入原图一点点
+    col = mix(outlineColor, col, smoothstep(0.51, 0.55, alpha));
+ 
+    // gl_FragColor = col;
+    return col;
+  }
+	
+}%

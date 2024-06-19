@@ -11,6 +11,7 @@
   "_techIdx": 0,
   "_defines": [
     {
+      "USE_ALPHA_TEST": true,
       "USE_TEXTURE": true
     }
   ],
@@ -26,6 +27,14 @@
     }
   ],
   "_props": [
-    {}
+    {
+      "inputColor": {
+        "__type__": "cc.Color",
+        "r": 14,
+        "g": 255,
+        "b": 43,
+        "a": 255
+      }
+    }
   ]
 }

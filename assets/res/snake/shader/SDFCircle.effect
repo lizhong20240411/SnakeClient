@@ -1,0 +1,142 @@
+// Copyright (c) 2017-2020 Xiamen Yaji Software Co., Ltd.
+
+// https://www.bilibili.com/video/BV1Qz4y1p7CE/
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: sprite-vs:vert
+      frag: sprite-fs:frag
+      depthStencilState:
+        depthTest: false
+        depthWrite: false
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendDstAlpha: one_minus_src_alpha
+      rasterizerState:
+        cullMode: none
+      properties:
+        inputColor: { editor: { type: color } }
+        LoctexSize: { value: [1, 1, 0, 0] }
+        LoctmaxDist: { value: [1.0, 1.0] }
+        _Value: { value: 0.01, editor: { range:[0, 1, 0.001], slide: true, tooltip: '变化程度' } } # 此处定义的参数都必须指向 CCProgram 处对应声明的 uniform
+}%
+
+CCProgram sprite-vs %{
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #if USE_LOCAL
+    #include <builtin/uniforms/cc-local>
+  #endif
+  #if SAMPLE_FROM_RT
+    #include <common/common-define>
+  #endif
+  in vec3 a_position;
+  in vec2 a_texCoord;
+  in vec4 a_color;
+
+  out vec4 color;
+  out vec2 uv0;
+
+  vec4 vert () {
+    vec4 pos = vec4(a_position, 1);
+
+    #if USE_LOCAL
+      pos = cc_matWorld * pos;
+    #endif
+
+    #if USE_PIXEL_ALIGNMENT
+      pos = cc_matView * pos;
+      pos.xyz = floor(pos.xyz);
+      pos = cc_matProj * pos;
+    #else
+      pos = cc_matViewProj * pos;
+    #endif
+
+    uv0 = a_texCoord;
+    #if SAMPLE_FROM_RT
+      CC_HANDLE_RT_SAMPLE_FLIP(uv0);
+    #endif
+    color = a_color;
+
+    return pos;
+  }
+}%
+
+CCProgram sprite-fs %{
+  #pragma extension([GL_OES_standard_derivatives, __VERSION__ < 300])
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #if USE_LOCAL
+    #include <builtin/uniforms/cc-local>
+  #endif
+  #include <builtin/internal/embedded-alpha>
+  #include <builtin/internal/alpha-test>
+  #include <common/common-define>
+  #include <sdf/sdf_func>
+
+  in vec4 color;
+
+  #if USE_TEXTURE
+    in vec2 uv0;
+    #pragma builtin(local)
+    layout(set = 2, binding = 12) uniform sampler2D cc_spriteTexture;
+  #endif
+
+  uniform DistortionExtent{
+    vec4 inputColor;
+    // 纹理尺寸
+    vec4 LoctexSize;
+    vec2 LoctmaxDist;
+    float _Value;
+  };
+  // vec4 texSize = vec4(165,127,1.0/165,1.0/127);   // (x,y,z,w) = (width, height, 1./width, 1./height)
+
+  // 生成圆形的SDF，SDF距离和纹理保持一致，圆周上dist=0
+  // uv: 范围[-1, 1]的uv坐标
+  // o: 圆心位置
+  // offset: 整体距离场往圆心靠近距离
+  float CircleSDF(vec2 uv, vec2 o, float offset) {
+    // dist范围[-1, 1]
+    float dist = distance(uv, o) * 2. - 1.;
+
+    // 环往内缩一点
+    dist += offset;
+
+    // 缩放SDF区间
+    return (-dist) * LoctexSize.x * LoctmaxDist.y * 0.25;
+    // return (-dist) * texSize.x / maxDist.x / 4.;
+  }
+
+  vec4 frag()
+  {
+    vec2 uv = uv0.xy;
+
+    // o是以图片中心为原点的uv坐标，范围[-1, 1]
+    vec2 o = uv * 2.0 - 1.0;
+    o.y *= LoctexSize.y * LoctexSize.z;
+
+    float D = GetD(cc_spriteTexture, uv);
+
+    // alpha区间[-1, 1], 0是图像边缘
+    float alpha = D * LoctmaxDist.y;
+
+    // 圆的outline
+    float circle = CircleSDF(o, vec2(0., 0.), 0.15);
+
+    // 混合两个sdf，根据时间来回切换
+    float t = cc_time.x;
+    alpha = mix(circle, alpha, smoothstep(0.35, 0.65, sin(t * 2.0) * 0.5 + 0.5));
+    alpha = mix(circle, alpha, smoothstep(0.35, 0.65, sin(t * 2.0) * 0.5 + 0.5));
+
+    // 显示边缘线并AA
+    float outlineWidth = 0.1;
+    float aastep = max(fwidth(alpha), 1e-8);
+    float mask = smoothstep(aastep, -aastep, abs(alpha) - outlineWidth);
+    vec4 v_out = vec4(0., 1., 0., mask);
+    return v_out;
+  }
+}%

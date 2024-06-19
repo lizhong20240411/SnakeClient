@@ -5,12 +5,13 @@
   "__editorExtras__": {},
   "_native": "",
   "_effectAsset": {
-    "__uuid__": "3005a222-ba58-4a2f-942d-7ab622e798fb",
+    "__uuid__": "f4fd5098-0726-42d1-8061-23197ec544a0",
     "__expectedType__": "cc.EffectAsset"
   },
   "_techIdx": 0,
   "_defines": [
     {
+      "USE_ALPHA_TEST": true,
       "USE_TEXTURE": true
     }
   ],
@@ -27,12 +28,9 @@
   ],
   "_props": [
     {
-      "inputColor": {
-        "__type__": "cc.Color",
-        "r": 228,
-        "g": 29,
-        "b": 29,
-        "a": 255
+      "u_dissolveMap": {
+        "__uuid__": "904b0406-da21-4e7a-89ae-6587d5ff074d@6c48a",
+        "__expectedType__": "cc.Texture2D"
       }
     }
   ]

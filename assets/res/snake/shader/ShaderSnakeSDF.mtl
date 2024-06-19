@@ -5,12 +5,13 @@
   "__editorExtras__": {},
   "_native": "",
   "_effectAsset": {
-    "__uuid__": "3005a222-ba58-4a2f-942d-7ab622e798fb",
+    "__uuid__": "7dc44f18-e6a8-43d4-8b02-2971c64f295e",
     "__expectedType__": "cc.EffectAsset"
   },
   "_techIdx": 0,
   "_defines": [
     {
+      "USE_ALPHA_TEST": true,
       "USE_TEXTURE": true
     }
   ],
@@ -29,11 +30,12 @@
     {
       "inputColor": {
         "__type__": "cc.Color",
-        "r": 228,
-        "g": 29,
-        "b": 29,
+        "r": 248,
+        "g": 23,
+        "b": 23,
         "a": 255
-      }
+      },
+      "degree": 0.128
     }
   ]
 }

@@ -5,7 +5,7 @@
   "__editorExtras__": {},
   "_native": "",
   "_effectAsset": {
-    "__uuid__": "3005a222-ba58-4a2f-942d-7ab622e798fb",
+    "__uuid__": "3d261576-18d0-4283-b063-843ffc5baa20",
     "__expectedType__": "cc.EffectAsset"
   },
   "_techIdx": 0,
@@ -26,14 +26,6 @@
     }
   ],
   "_props": [
-    {
-      "inputColor": {
-        "__type__": "cc.Color",
-        "r": 228,
-        "g": 29,
-        "b": 29,
-        "a": 255
-      }
-    }
+    {}
   ]
 }
